@@ -91,7 +91,7 @@ class OneLoginController extends Controller
         return redirect($request->get('RelayState') ?? '/');
     }
 
-    protected function resolveUser(array $credentials)
+    protected function resolveUser(array $userAttributes)
     {
         $userClass = config('auth.providers.users.model');
 

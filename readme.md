@@ -64,7 +64,7 @@ inside your application's `NovaServiceProvider`:
 By default, the following actions happen on successful login (From the OneloginController):
 
 ```php
-    protected function resolveUser(array $credentials)
+    protected function resolveUser(array $userAttributes)
     {
         $userClass = config('auth.providers.users.model');
 
