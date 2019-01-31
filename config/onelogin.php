@@ -10,12 +10,12 @@ return [
      * Taken from your apps SSO configuration screen, the field called "SAML 2.0 Endpoint (HTTP)",
      * this is your "single sign on url"
      */
-    'sso_url' => 'https://zdcommerce.onelogin.com/trust/saml2/http-post/sso/...',
+    'sso_url' => 'https://yourdomain.onelogin.com/trust/saml2/http-post/sso/...',
 
     /**
      * Taken from your apps SSO configuration screen, the field called "SLO Endpoint (HTTP)"
      */
-    'slo_url' => 'https://zdcommerce.onelogin.com/trust/saml2/http-redirect/slo/...',
+    'slo_url' => 'https://yourdomain.onelogin.com/trust/saml2/http-redirect/slo/...',
 
     /**
      * Taken from your apps SSO configuration screen, to get this value, click on "View Details"
