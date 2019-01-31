@@ -18,11 +18,67 @@ Next, publish the configuration file:
 
     artisan vendor:publish --provider=ZiffDavis\Laravel\Onelogin\OneloginServiceProvider
 
-# Configuration
+# Configuration & Setup
 
 Go into your onelogin administration screen, create an application with the
 "SAML Test Connector (IdP w/attr)" template.  The onelogin tutorial is a great reference at
 https://developers.onelogin.com/saml/php
 
 Once you have an app in onelogin minimally setup, utilize the App > SSO tab to get the necessary
-values to put inside the configuration file.
+values to put inside the configuration file. See [./config/onelogin.php](./config/onelogin.php)
+for details on which fields are necessary.
+
+## The User Setup
+
+(The following setup assumes your users will be populated by onelogin the first time they
+successfully try to log into your application.)
+
+Out the box, this package is designed to work with the typical user schema provided with laravel with
+minimal changes.  Typical changes to make look like this:
+
+- remove the `2014_10_12_100000_create_password_resets_table.php` migration file
+- remove the `$table->timestamp('email_verified_at')->nullable();` and `$table->string('password');` columns from the `2014_10_12_000000_create_users_table.php` migration
+
+### User Attributes and New User Workflow
+
+By default, the following actions happen on successful login (From the OneloginController):
+
+```php
+    protected function resolveUser(array $credentials)
+    {
+        $userClass = config('auth.providers.users.model');
+
+        $user = $userClass::firstOrNew(['email' => $credentials['User.email'][0]]);
+
+        if (isset($credentials['User.FirstName'][0]) && isset($credentials['User.LastName'][0])) {
+            $user->name = "{$credentials['User.FirstName'][0]} {$credentials['User.LastName'][0]}";
+        }
+
+        $user->save();
+
+        return $user;
+    }
+```
+
+To customize this experience, create an Event inside your applications `EventServiceProvider`'s boot() method:
+
+```php
+    public function boot()
+    {
+          // assuming: use ZiffDavis\Laravel\Onelogin\Events\OneloginLoginEvent;
+          
+          Event::listen(OneloginLoginEvent::class, function (OneloginLoginEvent $event) {
+              $user = User::firstOrNew(['email' => $event->userAttributes['User.email'][0]]);
+  
+              if (isset($event->userAttributes['User.FirstName'][0]) && isset($event->userAttributes['User.LastName'][0])) {
+                  $user->name = "{$event->userAttributes['User.FirstName'][0]} {$event->userAttributes['User.LastName'][0]}";
+              }
+              
+              // other custom logic here
+  
+              $user->save();
+  
+              return $user;
+          });
+    }
+```
