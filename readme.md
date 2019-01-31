@@ -39,6 +39,26 @@ minimal changes.  Typical changes to make look like this:
 - remove the `2014_10_12_100000_create_password_resets_table.php` migration file
 - remove the `$table->timestamp('email_verified_at')->nullable();` and `$table->string('password');` columns from the `2014_10_12_000000_create_users_table.php` migration
 
+### (Optional) Laravel Nova...
+
+Laravel Nova's default installation adds authentication routes to your application, it is wise to remove them
+inside your application's `NovaServiceProvider`:
+
+```php
+    /**
+     * Register the Nova routes.
+     *
+     * @return void
+     */
+    protected function routes()
+    {
+        Nova::routes()
+                // ->withAuthenticationRoutes()
+                // ->withPasswordResetRoutes()
+                ->register();
+    }
+``` 
+
 ### User Attributes and New User Workflow
 
 By default, the following actions happen on successful login (From the OneloginController):
