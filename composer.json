@@ -1,0 +1,30 @@
+{
+    "name": "ziffdavis/laravel-onelogin",
+    "description": "Simplified integration of OneLogin for Laravel applications.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ralph Schindler",
+            "email": "ralph_schindler@ziffdavis.com"
+        }
+    ],
+    "require": {
+        "onelogin/php-saml": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "ZiffDavis\\Laravel\\Onelogin\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "ZiffDavis\\Laravel\\Onelogin\\OneloginServiceProvider"
+            ]
+        }
+    }
+}
