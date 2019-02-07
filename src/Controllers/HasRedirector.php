@@ -15,7 +15,9 @@ trait HasRedirector
 
         // next, use a previous url if it is not this url
         if ($considerPrevious && url()->current() !== ($previous = url()->previous())) {
-            return $previous;
+            if (strpos($previous, $request->root()) !== false) {
+                return $previous;
+            }
         }
 
         // finally, use a configured landing route, or just use /
