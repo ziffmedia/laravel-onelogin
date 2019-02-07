@@ -95,10 +95,10 @@ class OneLoginController extends Controller
     {
         $userClass = config('auth.providers.users.model');
 
-        $user = $userClass::firstOrNew(['email' => $credentials['User.email'][0]]);
+        $user = $userClass::firstOrNew(['email' => $userAttributes['User.email'][0]]);
 
-        if (isset($credentials['User.FirstName'][0]) && isset($credentials['User.LastName'][0])) {
-            $user->name = "{$credentials['User.FirstName'][0]} {$credentials['User.LastName'][0]}";
+        if (isset($userAttributes['User.FirstName'][0]) && isset($userAttributes['User.LastName'][0])) {
+            $user->name = "{$userAttributes['User.FirstName'][0]} {$userAttributes['User.LastName'][0]}";
         }
 
         $user->save();
