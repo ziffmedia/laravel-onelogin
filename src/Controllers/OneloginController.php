@@ -71,7 +71,7 @@ class OneLoginController extends Controller
         $userAttributes = $this->oneLogin->getAttributes();
 
         $loginEvent = new OneloginLoginEvent($userAttributes);
-        $results = Event::fire($loginEvent);
+        $results = Event::dispatch($loginEvent);
 
         $user = array_first($results, function ($result) {
             return $result instanceof Authenticatable;
