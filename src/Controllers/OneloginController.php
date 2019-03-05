@@ -4,20 +4,22 @@ namespace ZiffDavis\Laravel\Onelogin\Controllers;
 
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Error;
+use OneLogin\Saml2\ValidationError;
 use ZiffDavis\Laravel\Onelogin\Events\OneloginLoginEvent;
-use ZiffDavis\Laravel\User\Auth\OneLoginEloquentUserProvider;
 
 class OneLoginController extends Controller
 {
     use HasRedirector;
 
+    /** @var Auth */
     protected $oneLogin;
-    protected $userProvider;
 
     function __construct(Auth $oneLogin)
     {
@@ -27,16 +29,17 @@ class OneLoginController extends Controller
     public function metadata()
     {
         $settings = $this->oneLogin->getSettings();
-        $metadata = $settings->getSPMetadata();
 
-        $errors = $settings->validateMetadata($metadata);
+        $metadata = '';
 
-        if (!empty($errors)) {
-            throw new \InvalidArgumentException(
-                'Invalid SP metadata: ' . implode(', ', $errors),
-                Error::METADATA_SP_INVALID
-            );
+        try {
+            $metadata = $settings->getSPMetadata();
+            $errors = $settings->validateMetadata($metadata);
+        } catch (\Exception $e) {
+            $errors = [$e->getMessage()];
         }
+
+        abort_if(!empty($errors), 500, 'Onelogin metadata errors: ' . implode(',', $errors));
 
         return response($metadata, 200, ['Content-Type' => 'text/xml']);
     }
@@ -50,21 +53,27 @@ class OneLoginController extends Controller
             return redirect($redirect);
         }
 
-        return redirect($this->oneLogin->login($redirect, [], false, false, true));
+        $url = null;
+
+        try {
+            $url = $this->oneLogin->login($redirect, [], false, false, true);
+        } catch (Error $errorException) {
+            abort(500, 'Onelogin URL Generation error: ' . $errorException->getMessage());
+        }
+
+        return redirect($url);
     }
 
     public function acs(Request $request, AuthManager $auth)
     {
-        $this->oneLogin->processResponse();
-        $errors = $this->oneLogin->getErrors();
-
-        if (!empty($errors)) {
-            $errorString = implode(', ', $errors);
-            if ($errorReason = $this->oneLogin->getLastErrorReason()) {
-                $errorString .= ' Error Reason: ' . $errorReason;
-            }
-            throw new \RuntimeException($errorString);
+        try {
+            $this->oneLogin->processResponse();
+            $error = $this->oneLogin->getLastErrorReason();
+        } catch (ValidationError | Error $errorException) {
+            $error = $errorException->getMessage();
         }
+
+        abort_if(!empty($error), 500, 'Onelogin ACS validation errors: ' . $error);
 
         abort_if(!$this->oneLogin->isAuthenticated(), 403, 'Unauthorized to use this application');
 
@@ -73,7 +82,7 @@ class OneLoginController extends Controller
         $loginEvent = new OneloginLoginEvent($userAttributes);
         $results = Event::dispatch($loginEvent);
 
-        $user = array_first($results, function ($result) {
+        $user = Arr::first($results, function ($result) {
             return $result instanceof Authenticatable;
         });
 
@@ -86,15 +95,22 @@ class OneLoginController extends Controller
 
         abort_if(!$user, 500, 'A user could not be resolved by the Onelogin Controller');
 
-        $auth->login($user);
+        $auth->guard()->login($user);
 
         return redirect($request->get('RelayState') ?? '/');
     }
 
     protected function resolveUser(array $userAttributes)
     {
-        $userClass = config('auth.providers.users.model');
+        $userClass = config('onelogin.user_class');
 
+        if (!$userClass) {
+            $userClass = config('auth.providers.users.model');
+        }
+
+        abort_if(!class_exists($userClass), 500, 'A user class was not configured to be used by the laravel-onelogin controller');
+
+        /** @var Authenticatable|Model $user */
         $user = $userClass::firstOrNew(['email' => $userAttributes['User.email'][0]]);
 
         if (isset($userAttributes['User.FirstName'][0]) && isset($userAttributes['User.LastName'][0])) {
@@ -106,5 +122,3 @@ class OneLoginController extends Controller
         return $user;
     }
 }
-
-

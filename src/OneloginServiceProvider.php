@@ -4,7 +4,6 @@ namespace ZiffDavis\Laravel\Onelogin;
 
 use Illuminate\Auth\AuthManager;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use OneLogin\Saml2;
 
@@ -56,17 +55,11 @@ class OneloginServiceProvider extends ServiceProvider
         $this->mergeConfigFrom($configSourcePath, 'onelogin');
 
         $this->loadViewsFrom(__DIR__ . '/../views', 'onelogin');
-
-        $auth->provider('onelogin', function ($app, $config) {
-            return new Auth\OneLoginEloquentUserProvider($app, $config);
-        });
     }
 
     public function register()
     {
         $this->app->singleton(Saml2\Auth::class, function () {
-            $oneloginConfig = config('onelogin');
-
             if (request()->isSecure()) {
                 Saml2\Utils::setSelfProtocol('https');
             }
