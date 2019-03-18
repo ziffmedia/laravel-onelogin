@@ -16,7 +16,7 @@ Features:
 
 Next, publish the configuration file:
 
-    artisan vendor:publish --provider=ZiffDavis\Laravel\Onelogin\OneloginServiceProvider
+    artisan vendor:publish --provider='ZiffDavis\Laravel\Onelogin\OneloginServiceProvider'
 
 # Configuration & Setup
 
