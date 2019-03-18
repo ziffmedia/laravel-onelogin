@@ -88,8 +88,8 @@ class OneLoginController extends Controller
 
         abort_if(array_search(false, $results, true) !== false, 403, 'There is no valid user in this application for provided credentials');
 
-        // if there was no Event fired, do the default action
-        if (!$user && count($results) === 0) {
+        // if there is no User (and a listener did not return false)
+        if (!$user) {
             $user = $this->resolveUser($userAttributes);
         }
 
