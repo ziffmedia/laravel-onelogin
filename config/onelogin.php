@@ -69,7 +69,11 @@ return [
     ],
 
     /**
+     * By default, the onelogin package will use the auth.defaults.guard as the guard to setup the user.
+     * For applications with multiple guards (admin users vs. site users), configure this to use the guard
+     * for the set of users you with to authenticate against one login.
      *
+     * Note: the guard's provider must have a auth.providers.{provider}.model option
      */
     'guard' => null
 ];
