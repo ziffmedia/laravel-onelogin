@@ -21,9 +21,13 @@ class OneLoginController extends Controller
     /** @var Auth */
     protected $oneLogin;
 
+    /** @var string The guard to use */
+    protected $guard;
+
     function __construct(Auth $oneLogin)
     {
         $this->oneLogin = $oneLogin;
+        $this->guard = config('onelogin.guard') ?? config('auth.defaults.guard');
     }
 
     public function metadata()
@@ -49,7 +53,7 @@ class OneLoginController extends Controller
         $redirect = $this->getRedirectUrl($request, true);
 
         // prevent logged in users from triggering a onelogin saml flow
-        if ($request->user()) {
+        if ($request->user($this->guard)) {
             return redirect($redirect);
         }
 
@@ -95,20 +99,20 @@ class OneLoginController extends Controller
 
         abort_if(!$user, 500, 'A user could not be resolved by the Onelogin Controller');
 
-        $auth->guard()->login($user);
+        $auth->guard($this->guard)->login($user);
 
         return redirect($request->get('RelayState') ?? '/');
     }
 
     protected function resolveUser(array $userAttributes)
     {
-        $userClass = config('onelogin.user_class');
+        $guardProvider = config('auth.guards.' . $this->guard . '.provider');
 
-        if (!$userClass) {
-            $userClass = config('auth.providers.users.model');
-        }
+        abort_if(!$guardProvider, 500, 'The guard auth.guards.' . $this->guard . ' is not configured properly.');
 
-        abort_if(!class_exists($userClass), 500, 'A user class was not configured to be used by the laravel-onelogin controller');
+        $userClass = config("auth.providers.{$guardProvider}.model");
+
+        abort_if(!$userClass || !class_exists($userClass), 500, 'A user class was not configured to be used by the laravel-onelogin controller');
 
         /** @var Authenticatable|Model $user */
         $user = $userClass::firstOrNew(['email' => $userAttributes['User.email'][0]]);

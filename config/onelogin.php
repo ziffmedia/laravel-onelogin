@@ -69,8 +69,7 @@ return [
     ],
 
     /**
-     * Use this user-class instead of the one defined by the auth.providers.users.model configuration
-     * value.  This is useful if your website has a different User class than your Admin area, for example.
+     *
      */
-    'user_class' => null
+    'guard' => null
 ];
