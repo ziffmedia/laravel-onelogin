@@ -2,6 +2,7 @@
 
 namespace ZiffDavis\Laravel\Onelogin;
 
+use Illuminate\Support\Arr;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -17,7 +18,7 @@ class OneloginServiceProvider extends ServiceProvider
 
         $router->middlewareGroup('onelogin', [Middleware\OneloginCsrfDisablerMiddleware::class]);
 
-        $middlewares = array_wrap(config('onelogin.routing.middleware'));
+        $middlewares = Arr::wrap(config('onelogin.routing.middleware'));
 
         $router->group([
             'namespace' => 'ZiffDavis\Laravel\Onelogin\Controllers',

@@ -17,6 +17,10 @@ Features:
 Next, publish the configuration file:
 
     artisan vendor:publish --provider='ZiffDavis\Laravel\Onelogin\OneloginServiceProvider'
+    
+### Note for Laravel 5.7+
+
+If your application uses Laravel 5.7 or greater, please make sure this package is updated to v0.0.7 or greater.
 
 # Configuration & Setup
 

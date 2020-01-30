@@ -2,6 +2,7 @@
 
 namespace ZiffDavis\Laravel\Onelogin\Middleware;
 
+use Illuminate\Support\Arr;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Router;
@@ -21,7 +22,7 @@ class OneloginCsrfDisablerMiddleware
 
     public function __invoke($request, \Closure $next)
     {
-        $csrfMiddlewareClass = array_first($this->router->gatherRouteMiddleware($this->router->getCurrentRoute()), function ($middleware) {
+        $csrfMiddlewareClass = Arr::first($this->router->gatherRouteMiddleware($this->router->getCurrentRoute()), function ($middleware) {
             return in_array(VerifyCsrfToken::class, class_parents($middleware));
         });
 
