@@ -30,7 +30,7 @@ class OneloginServiceProvider extends ServiceProvider
             $router->get('/login', 'OneloginController@login')->name('login');
             // @todo implement SSO
             // $router->get('/logout', 'OneloginController@logout')->name('logout');
-            $router->post('/acs', 'OneloginController@acs')->name('acs');
+            $router->match(['get', 'post'], '/acs', 'OneloginController@acs')->name('acs');
         });
 
         if (config('onelogin.routing.root_routes.enable')) {

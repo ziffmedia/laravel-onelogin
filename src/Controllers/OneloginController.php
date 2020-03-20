@@ -70,6 +70,12 @@ class OneLoginController extends Controller
 
     public function acs(Request $request, AuthManager $auth)
     {
+        if ($request->isMethod('GET')) {
+            return redirect(
+                $this->oneLogin->login($this->getRedirectUrl($request), [], false, false, true)
+            );
+        }
+
         try {
             $this->oneLogin->processResponse();
             $error = $this->oneLogin->getLastErrorReason();
