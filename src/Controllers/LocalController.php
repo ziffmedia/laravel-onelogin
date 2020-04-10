@@ -3,14 +3,8 @@
 namespace ZiffDavis\Laravel\Onelogin\Controllers;
 
 use Illuminate\Auth\AuthManager;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Event;
-use OneLogin\Saml2\Auth;
-use OneLogin\Saml2\Error;
-use ZiffDavis\Laravel\Onelogin\Events\OneloginLoginEvent;
-use ZiffDavis\Laravel\User\Auth\OneLoginEloquentUserProvider;
 
 class LocalController extends Controller
 {

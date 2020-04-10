@@ -65,7 +65,14 @@ return [
              * handler will attempt to redirect to /auth, which the laravel-onelogin package can now handle for you.
              */
             'autologin' => false,
-        ]
+        ],
+
+        /**
+         * In certain circumstances (such as using cloudflare edge auth), the initial ACS POST request is
+         * inadvertantly turned into a GET request to the ACS route. Enabling this will make sure that GET
+         * requests are also redirected back to the onelogin SAML flow
+         */
+        'enable_acs_redirect_for_get' => false,
     ],
 
     /**

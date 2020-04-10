@@ -6,10 +6,11 @@ use Illuminate\Support\Arr;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
 
 class OneloginCsrfDisablerMiddleware
 {
-    /** @var \Illuminate\Routing\Router */
+    /** @var Router */
     protected $router;
 
     protected $container;

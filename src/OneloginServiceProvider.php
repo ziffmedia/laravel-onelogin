@@ -2,9 +2,8 @@
 
 namespace ZiffDavis\Laravel\Onelogin;
 
-use Illuminate\Support\Arr;
-use Illuminate\Auth\AuthManager;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use OneLogin\Saml2;
 
@@ -12,7 +11,7 @@ class OneloginServiceProvider extends ServiceProvider
 {
     protected $defer = false;
 
-    public function boot(AuthManager $auth, Router $router)
+    public function boot(Router $router)
     {
         $configSourcePath = realpath(__DIR__ . '/../config/onelogin.php');
 
@@ -20,16 +19,17 @@ class OneloginServiceProvider extends ServiceProvider
 
         $middlewares = Arr::wrap(config('onelogin.routing.middleware'));
 
-        $router->group([
+        $routeGroupParams = [
             'namespace' => 'ZiffDavis\Laravel\Onelogin\Controllers',
             'as' => 'onelogin.',
             'prefix' => 'onelogin/',
             'middleware' => array_merge(['onelogin'], $middlewares),
-        ], function () use ($router) {
+        ];
+
+        // @todo implement SSO routes at /logout
+        $router->group($routeGroupParams, function () use ($router) {
             $router->get('/metadata', 'OneloginController@metadata')->name('metadata');
             $router->get('/login', 'OneloginController@login')->name('login');
-            // @todo implement SSO
-            // $router->get('/logout', 'OneloginController@logout')->name('logout');
             $router->match(['get', 'post'], '/acs', 'OneloginController@acs')->name('acs');
         });
 
