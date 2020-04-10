@@ -1,5 +1,5 @@
 {
-    "name": "ziffdavis/laravel-onelogin",
+    "name": "ziffmedia/laravel-onelogin",
     "description": "Simplified integration of OneLogin for Laravel applications.",
     "type": "library",
     "license": "MIT",
@@ -14,16 +14,13 @@
     },
     "autoload": {
         "psr-4": {
-            "ZiffDavis\\Laravel\\Onelogin\\": "src/"
+            "ZiffMedia\\Laravel\\Onelogin\\": "src/"
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        },
         "laravel": {
             "providers": [
-                "ZiffDavis\\Laravel\\Onelogin\\OneloginServiceProvider"
+                "ZiffMedia\\Laravel\\Onelogin\\OneloginServiceProvider"
             ]
         }
     },

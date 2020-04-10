@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffDavis\Laravel\Onelogin\Events;
+namespace ZiffMedia\Laravel\Onelogin\Events;
 
 class OneloginLoginEvent
 {

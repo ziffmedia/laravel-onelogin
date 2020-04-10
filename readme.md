@@ -12,12 +12,12 @@ Features:
 
 # Installation
 
-    composer require ziffdavis/laravel-onelogin
+    composer require ziffmedia/laravel-onelogin
 
 Next, publish the configuration file:
 
-    artisan vendor:publish --provider='ZiffDavis\Laravel\Onelogin\OneloginServiceProvider'
-    
+    artisan vendor:publish --provider='ZiffMedia\Laravel\Onelogin\OneloginServiceProvider'
+
 ### Note for Laravel 5.7+
 
 If your application uses Laravel 5.7 or greater, please make sure this package is updated to v0.0.7 or greater.
@@ -61,7 +61,7 @@ inside your application's `NovaServiceProvider`:
                 // ->withPasswordResetRoutes()
                 ->register();
     }
-``` 
+```
 
 ### User Attributes and New User Workflow
 
@@ -89,19 +89,19 @@ To customize this experience, create an Event inside your applications `EventSer
 ```php
     public function boot()
     {
-          // assuming: use ZiffDavis\Laravel\Onelogin\Events\OneloginLoginEvent;
-          
+          // assuming: use ZiffMedia\Laravel\Onelogin\Events\OneloginLoginEvent;
+
           Event::listen(OneloginLoginEvent::class, function (OneloginLoginEvent $event) {
               $user = User::firstOrNew(['email' => $event->userAttributes['User.email'][0]]);
-  
+
               if (isset($event->userAttributes['User.FirstName'][0]) && isset($event->userAttributes['User.LastName'][0])) {
                   $user->name = "{$event->userAttributes['User.FirstName'][0]} {$event->userAttributes['User.LastName'][0]}";
               }
-              
+
               // other custom logic here
-  
+
               $user->save();
-  
+
               return $user;
           });
     }

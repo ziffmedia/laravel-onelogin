@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffDavis\Laravel\Onelogin\Controllers;
+namespace ZiffMedia\Laravel\Onelogin\Controllers;
 
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Event;
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Error;
 use OneLogin\Saml2\ValidationError;
-use ZiffDavis\Laravel\Onelogin\Events\OneloginLoginEvent;
+use ZiffMedia\Laravel\Onelogin\Events\OneloginLoginEvent;
 
 class OneloginController extends Controller
 {
