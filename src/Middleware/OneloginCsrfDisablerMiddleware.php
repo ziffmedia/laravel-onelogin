@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\Laravel\Onelogin\Middleware;
+namespace ZiffMedia\LaravelOnelogin\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Container\Container;

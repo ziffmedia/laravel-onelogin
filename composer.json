@@ -17,13 +17,13 @@
     },
     "autoload": {
         "psr-4": {
-            "ZiffMedia\\Laravel\\Onelogin\\": "src/"
+            "ZiffMedia\\LaravelOnelogin\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "ZiffMedia\\Laravel\\Onelogin\\OneloginServiceProvider"
+                "ZiffMedia\\LaravelOnelogin\\OneloginServiceProvider"
             ]
         }
     },

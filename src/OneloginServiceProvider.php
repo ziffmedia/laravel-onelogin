@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\Laravel\Onelogin;
+namespace ZiffMedia\LaravelOnelogin;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\Arr;
@@ -20,7 +20,7 @@ class OneloginServiceProvider extends ServiceProvider
         $middlewares = Arr::wrap(config('onelogin.routing.middleware'));
 
         $routeGroupParams = [
-            'namespace' => 'ZiffMedia\Laravel\Onelogin\Controllers',
+            'namespace' => 'ZiffMedia\LaravelOnelogin\Controllers',
             'as' => 'onelogin.',
             'prefix' => 'onelogin/',
             'middleware' => array_merge(['onelogin'], $middlewares),
@@ -34,7 +34,7 @@ class OneloginServiceProvider extends ServiceProvider
         });
 
         if (config('onelogin.routing.root_routes.enable')) {
-            $rootRouteGroupParams = ['namespace' => 'ZiffMedia\Laravel\Onelogin\Controllers', 'middleware' => $middlewares];
+            $rootRouteGroupParams = ['namespace' => 'ZiffMedia\LaravelOnelogin\Controllers', 'middleware' => $middlewares];
 
             $router->group($rootRouteGroupParams, function () use ($router) {
                 $router->get('login', 'LocalController@login')->name('login');

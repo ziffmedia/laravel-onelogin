@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\Laravel\Onelogin\Controllers;
+namespace ZiffMedia\LaravelOnelogin\Controllers;
 
 use Illuminate\Http\Request;
 
