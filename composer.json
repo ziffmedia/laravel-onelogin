@@ -12,6 +12,9 @@
     "require": {
         "onelogin/php-saml": "^3.1"
     },
+    "replace": {
+        "ziffdavis/laravel-onelogin": "*"
+    },
     "autoload": {
         "psr-4": {
             "ZiffMedia\\Laravel\\Onelogin\\": "src/"
