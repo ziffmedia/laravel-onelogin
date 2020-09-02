@@ -24,9 +24,12 @@ If your application uses Laravel 5.7 or greater, please make sure this package i
 
 # Configuration & Setup
 
-Go into your onelogin administration screen, create an application with the
-"SAML Test Connector (IdP w/attr)" template.  The onelogin tutorial is a great reference at
-https://developers.onelogin.com/saml/php
+Go into your onelogin administration screen, search for any application (for example one with "SAML" in
+the name).  This is *not* the connector to use, instead in the URL replace the app connector id with `43457`
+so that it reads something like `https://<your company>.onelogin.com/apps/new/43457`.  Create an app from this
+connector template.
+
+The onelogin tutorial is a great reference at https://developers.onelogin.com/saml/php
 
 Once you have an app in onelogin minimally setup, utilize the App > SSO tab to get the necessary
 values to put inside the configuration file. See [./config/onelogin.php](./config/onelogin.php)
