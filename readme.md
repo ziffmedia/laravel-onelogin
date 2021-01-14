@@ -109,3 +109,19 @@ To customize this experience, create an Event inside your applications `EventSer
           });
     }
 ```
+
+# Local Users in Development (To Bypass Onelogin)
+
+To shortcut the onelogin SAML flow in development, your app has to be in the `local` environment, then ensure that
+`app.debug` is `true`, and finally add the following configuration to your `config/onelogin.php` file:
+
+```php
+    'local_user' => [
+        'enable' => true,
+
+        'attributes' => [
+            'email' => 'developer@example.com',
+            'name' => 'Software Developer'
+        ]
+    ]
+```

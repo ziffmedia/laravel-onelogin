@@ -5,6 +5,7 @@ namespace ZiffMedia\LaravelOnelogin\Controllers;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Arr;
@@ -48,9 +49,17 @@ class OneloginController extends Controller
         return response($metadata, 200, ['Content-Type' => 'text/xml']);
     }
 
-    public function login(Request $request)
+    public function login(Request $request, AuthManager $auth)
     {
         $redirect = $this->getRedirectUrl($request, true);
+
+        if (app()->isLocal() && config('app.debug') && config('onelogin.local_user.enable')) {
+            $user = $this->resolveLocalUser();
+
+            $auth->guard($this->guard)->login($user);
+
+            return redirect($redirect);
+        }
 
         // prevent logged in users from triggering a onelogin saml flow
         if ($request->user($this->guard)) {
@@ -83,6 +92,7 @@ class OneloginController extends Controller
 
         try {
             $this->oneLogin->processResponse();
+
             $error = $this->oneLogin->getLastErrorReason();
         } catch (ValidationError | Error $errorException) {
             $error = $errorException->getMessage();
@@ -117,15 +127,9 @@ class OneloginController extends Controller
 
     protected function resolveUser(array $userAttributes)
     {
-        $guardProvider = config('auth.guards.' . $this->guard . '.provider');
+        $userClass = $this->getUserClass();
 
-        abort_if(!$guardProvider, 500, 'The guard auth.guards.' . $this->guard . ' is not configured properly.');
-
-        $userClass = config("auth.providers.{$guardProvider}.model");
-
-        abort_if(!$userClass || !class_exists($userClass), 500, 'A user class was not configured to be used by the laravel-onelogin controller');
-
-        /** @var Authenticatable|Model $user */
+        /** @var User $user */
         $user = $userClass::firstOrNew(['email' => $userAttributes['User.email'][0]]);
 
         if (isset($userAttributes['User.FirstName'][0]) && isset($userAttributes['User.LastName'][0])) {
@@ -135,5 +139,36 @@ class OneloginController extends Controller
         $user->save();
 
         return $user;
+    }
+
+    protected function resolveLocalUser()
+    {
+        $userClass = $this->getUserClass();
+
+        $userAttributes = config('onelogin.local_user.attributes');
+
+        abort_if(! isset($userAttributes['email']), 500, 'Your configuration is using onelogin.local_user, but there is no onelogin.local_user.attributes.email defined.');
+
+        return tap($userClass::firstOrNew(['email' => $userAttributes['email']]), function ($user) use ($userAttributes) {
+            if (isset($userAttributes['name'])) {
+                $user->name = $userAttributes['name'];
+            }
+
+            $user->save();
+        });
+    }
+
+    protected function getUserClass()
+    {
+        $guardProvider = config('auth.guards.' . $this->guard . '.provider');
+
+        abort_if(!$guardProvider, 500, 'The guard auth.guards.' . $this->guard . ' is not configured properly.');
+
+        /** @var User $userClass */
+        $userClass = config("auth.providers.{$guardProvider}.model");
+
+        abort_if(!$userClass || !class_exists($userClass), 500, 'A user class was not configured to be used by the laravel-onelogin controller');
+
+        return $userClass;
     }
 }
