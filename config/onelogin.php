@@ -82,5 +82,37 @@ return [
      *
      * Note: the guard's provider must have a auth.providers.{provider}.model option
      */
-    'guard' => null
+    'guard' => null,
+
+    /**
+     * User configuration
+     */
+    'user' => [
+
+        /**
+         * The map of attributes from the SAML Response <saml:Subject> section
+         */
+        'attribute_map' => [
+            'email' => 'User.Email',
+
+            'name'  => [
+                'User.FirstName',
+                'User.LastName'
+            ]
+        ],
+
+        /**
+         * If you want to have a development user that by-passes the onelogin SAML flow, you can enable this here.
+         * This is useful for when your application is not yet setup and you want to inject a development user as
+         * if it were a OneLogin provided user.
+         */
+        'local_dev_user' => [
+            'enable' => false,
+
+            'attributes' => [
+                'name' => 'Developer',
+                'email' => 'developer@example.com',
+            ]
+        ]
+    ]
 ];
