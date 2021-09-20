@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Event;
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Error;
 use OneLogin\Saml2\ValidationError;
+use RuntimeException;
 use ZiffMedia\LaravelOnelogin\Events\OneloginLoginEvent;
 
 class OneloginController extends Controller
@@ -53,7 +54,7 @@ class OneloginController extends Controller
     {
         $redirect = $this->getRedirectUrl($request, true);
 
-        if (app()->isLocal() && config('app.debug') && config('onelogin.local_user.enable')) {
+        if (app()->isLocal() && config('app.debug') && config('onelogin.user.local_dev_user.enable')) {
             $user = $this->resolveLocalUser();
 
             $auth->guard($this->guard)->login($user);
@@ -129,11 +130,27 @@ class OneloginController extends Controller
     {
         $userClass = $this->getUserClass();
 
-        /** @var User $user */
-        $user = $userClass::firstOrNew(['email' => $userAttributes['User.email'][0]]);
+        $emailAttributeName = config('onelogin.user.attribute_map.email');
 
-        if (isset($userAttributes['User.FirstName'][0]) && isset($userAttributes['User.LastName'][0])) {
-            $user->name = "{$userAttributes['User.FirstName'][0]} {$userAttributes['User.LastName'][0]}";
+        if (!array_key_exists($emailAttributeName, $userAttributes)) {
+            throw new RuntimeException("SAML Response does not contain the expected user attribute for email '$emailAttributeName'");
+        }
+
+        if ($userAttributes[$emailAttributeName][0] == '') {
+            throw new RuntimeException("SAML Response contains the expected user attribute for email '$emailAttributeName' but it is empty");
+        }
+
+        /** @var User $user */
+        $user = $userClass::firstOrNew(['email' => $userAttributes[$emailAttributeName][0]]);
+
+        $nameAttributeName = config('onelogin.user.attribute_map.name');
+
+        if (is_array($nameAttributeName)) {
+            if (isset($userAttributes[$nameAttributeName[0]][0]) && isset($userAttributes[$nameAttributeName[1]][0])) {
+                $user->name = "{$userAttributes[$nameAttributeName[0]][0]} {$userAttributes[$nameAttributeName[1]][0]}";
+            }
+        } else {
+            $user->name = $userAttributes[$nameAttributeName][0];
         }
 
         $user->save();
@@ -145,7 +162,7 @@ class OneloginController extends Controller
     {
         $userClass = $this->getUserClass();
 
-        $userAttributes = config('onelogin.local_user.attributes');
+        $userAttributes = config('onelogin.user.local_dev_user.attributes');
 
         abort_if(! isset($userAttributes['email']), 500, 'Your configuration is using onelogin.local_user, but there is no onelogin.local_user.attributes.email defined.');
 
