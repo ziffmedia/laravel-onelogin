@@ -92,7 +92,7 @@ To customize this experience, create an Event inside your applications `EventSer
 ```php
     public function boot()
     {
-          // assuming: use ZiffMedia\Laravel\Onelogin\Events\OneloginLoginEvent;
+          // assuming: use ZiffMedia\LaravelOnelogin\Events\OneloginLoginEvent;
 
           Event::listen(OneloginLoginEvent::class, function (OneloginLoginEvent $event) {
               $user = User::firstOrNew(['email' => $event->userAttributes['User.email'][0]]);
