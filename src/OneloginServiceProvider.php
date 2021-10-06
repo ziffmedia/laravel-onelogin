@@ -75,7 +75,7 @@ class OneloginServiceProvider extends ServiceProvider
                         'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
                     ],
                     'attributeConsumingService' => [
-                        'ServiceName' => config('onelogin.sp.attribute_consuming_service.service_name'),
+                        'serviceName' => config('onelogin.sp.attribute_consuming_service.service_name'),
                         'serviceDescription' => config('onelogin.sp.attribute_consuming_service.service_description'),
                         'requestedAttributes' => [
                             [
