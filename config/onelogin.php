@@ -114,5 +114,17 @@ return [
                 'email' => 'developer@example.com',
             ]
         ]
+    ],
+
+    /**
+     * SP configuration
+     */
+    'sp' => [
+        'attribute_consuming_service' => [
+            'service_name' => 'SP test',
+            'service_description' => 'Test Service',
+        ],
+        'x509_cert' => '',
+        'private_key' => '',
     ]
 ];
