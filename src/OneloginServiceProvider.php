@@ -94,6 +94,7 @@ class OneloginServiceProvider extends ServiceProvider
                     'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
                     'x509cert' => '',
                     'privateKey' => '',
+                    'x509certNew' => '',
                 ],
                 'idp' => [
                     'entityId' => config('onelogin.issuer_url'),
