@@ -164,6 +164,18 @@ class OneloginController extends Controller
 
         $userAttributes = config('onelogin.user.local_dev_user.attributes');
 
+        $loginEvent = new OneloginLoginEvent($userAttributes);
+        $results = Event::dispatch($loginEvent);
+
+        $user = Arr::first($results, function ($result) {
+            return $result instanceof Authenticatable;
+        });
+
+        // if there is no User (and a listener did not return false)
+        if ($user) {
+            return $user;
+        }
+        
         abort_if(! isset($userAttributes['email']), 500, 'Your configuration is using onelogin.local_user, but there is no onelogin.local_user.attributes.email defined.');
 
         return tap($userClass::firstOrNew(['email' => $userAttributes['email']]), function ($user) use ($userAttributes) {
