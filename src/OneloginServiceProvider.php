@@ -26,10 +26,10 @@ class OneloginServiceProvider extends ServiceProvider
             'middleware' => array_merge(['onelogin'], $middlewares),
         ];
 
-        // @todo implement SSO routes at /logout
         $router->group($routeGroupParams, function () use ($router) {
             $router->get('/metadata', 'OneloginController@metadata')->name('metadata');
             $router->get('/login', 'OneloginController@login')->name('login');
+            $router->get('/logout', 'OneloginController@logout')->name('logout');
             $router->match(['get', 'post'], '/acs', 'OneloginController@acs')->name('acs');
         });
 
@@ -88,7 +88,7 @@ class OneloginServiceProvider extends ServiceProvider
                         ]
                     ],
                     'singleLogoutService' => [
-                        'url' => route('onelogin.acs'),
+                        'url' => route('onelogin.logout'),
                         'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
                     ],
                     'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',

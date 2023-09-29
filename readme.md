@@ -7,6 +7,7 @@ Features:
 - simplified configuration process
 - top level (configurable) `login` and `logout` routes
 - support for autologin
+- support for application single logout
 - ability to map any User attributes via a login event
 - loose SAML workflow for localhost/local environments, strict when in production
 
@@ -34,6 +35,18 @@ The onelogin tutorial is a great reference at https://developers.onelogin.com/sa
 Once you have an app in onelogin minimally setup, utilize the App > SSO tab to get the necessary
 values to put inside the configuration file. See [./config/onelogin.php](./config/onelogin.php)
 for details on which fields are necessary.
+
+# Application single logout
+
+If you want the onelogin IDP to log your users out of your application when they logout of onelogin, then you need to
+configure onelogin to know where the single logout url is.
+
+Configure the onelogin application under App -> Configuration, set your single logout url with the url of your laravel
+application with the route for onelogin.logout
+
+`https://yourdomain.com/onelogin/logout`
+
+When this url is called, the user will be logged out of your application auth guard.
 
 ## The User Setup
 

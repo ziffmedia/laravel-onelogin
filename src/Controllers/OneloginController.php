@@ -78,6 +78,29 @@ class OneloginController extends Controller
         return redirect($url);
     }
 
+    public function logout(Request $request, AuthManager $auth)
+    {
+        // default to routing fallback
+        $redirectUrl = config('onelogin.routing.fallback_redirect');
+
+        try {
+            // Process SLO setting stay parameter to true to allow flow handling
+            // Keep session for laravel to handle
+            $redirectUrl = $this->oneLogin->processSLO(true, null, false, null, true);
+
+            $error = $this->oneLogin->getLastErrorReason();
+        } catch (ValidationError | Error $errorException) {
+            $error = $errorException->getMessage();
+        }
+
+        abort_if(!empty($error), 500, 'Onelogin SLO validation errors: ' . $error);
+
+        // no errors call guard logout
+        $auth->guard($this->guard)->logout();
+
+        return redirect($redirectUrl);
+    }
+
     public function acs(Request $request, AuthManager $auth)
     {
         /**
